@@ -62,6 +62,6 @@ class LogService {
         def errors = response.errors.collect { error ->
             "${error.field}: ${error.message}"
         }
-        return errors.join(', ')
+        return errors()
     }
 }
