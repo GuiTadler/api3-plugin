@@ -52,7 +52,7 @@ class LogService {
         resource = resource.substring(resource.indexOf("/") + 1)
         resource = resource.substring(0, resource.indexOf("/"))
 
-        return resource.toUpperCase()
+        return resource()
     }
 
     private static String getErrors(JSONObject response) {

@@ -43,7 +43,9 @@ environments:
         management:
             endpoints:
                 enabled-by-default: false
-
+server:
+    port:
+        8280
 ---
 grails:
     mime:
@@ -89,38 +91,49 @@ hibernate:
 dataSource:
     pooled: true
     jmxExport: true
-    driverClassName: org.h2.Driver
-    username: sa
-    password: ''
+    driverClassName: oracle.jdbc.OracleDriver
+    logSql: true
+    dialect: org.hibernate.dialect.Oracle12cDialect
+    username: ALUNO4
+    password: 'ALUNO4'
 
-environments:
-    development:
-        dataSource:
-            dbCreate: create-drop
-            url: jdbc:h2:mem:devDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
-    test:
-        dataSource:
-            dbCreate: update
-            url: jdbc:h2:mem:testDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
-    production:
-        dataSource:
-            dbCreate: none
-            url: jdbc:h2:./prodDb;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
-            properties:
-                jmxEnabled: true
-                initialSize: 5
-                maxActive: 50
-                minIdle: 5
-                maxIdle: 25
-                maxWait: 10000
-                maxAge: 600000
-                timeBetweenEvictionRunsMillis: 5000
-                minEvictableIdleTimeMillis: 60000
-                validationQuery: SELECT 1
-                validationQueryTimeout: 3
-                validationInterval: 15000
-                testOnBorrow: true
-                testWhileIdle: true
-                testOnReturn: false
-                jdbcInterceptors: ConnectionState
-                defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
+    environments:
+        development:
+            dataSource:
+                dbCreate: create-drop
+                driverClassName: oracle.jdbc.OracleDriver
+                username: ALUNO4
+                password: 'ALUNO4'
+                url: jdbc:oracle:thin:@insoft-lnx4.insoft.local:1521:DESENV01
+        test:
+            dataSource:
+                dbCreate: create-drop
+                driverClassName: oracle.jdbc.OracleDriver
+                username: ALUNO4
+                password: 'ALUNO4'
+                url: jdbc:oracle:thin:@insoft-lnx4.insoft.local:1521:DESENV01
+        production:
+            dataSource:
+                dbCreate: create-drop
+                driverClassName: oracle.jdbc.OracleDriver
+                username: ALUNO4
+                password: 'ALUNO4'
+                url: jdbc:oracle:thin:@insoft-lnx4.insoft.local:1521:DESENV01
+                properties:
+                    jmxEnabled: true
+                    initialSize: 5
+                    maxActive: 50
+                    minIdle: 5
+                    maxIdle: 25
+                    maxWait: 10000
+                    maxAge: 600000
+                    timeBetweenEvictionRunsMillis: 5000
+                    minEvictableIdleTimeMillis: 60000
+                    validationQuery: SELECT 1
+                    validationQueryTimeout: 10000
+                    validationInterval: 15000
+                    testOnBorrow: true
+                    testWhileIdle: true
+                    testOnReturn: false
+                    jdbcInterceptors: ConnectionState
+                    defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
