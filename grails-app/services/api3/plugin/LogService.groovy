@@ -2,66 +2,41 @@ package api3.plugin
 
 import grails.gorm.transactions.Transactional
 import java.time.LocalDate
-import org.grails.web.json.JSONObject
-import javax.servlet.http.HttpServletRequest
 
 @Transactional
 class LogService {
 
-    void salvarLog(HttpServletRequest request, JSONObject response, LocalDate data) {
-        if (request.method != 'GET') {
-            Log log = criarLog(request, response, data)
-            log.save(flush: true)
+    def salvarLog(Map dadosLog) {
+        Map retorno = [success: true]
+        log.error("dadosLog: ${dadosLog}")
+        String descricao = montarDescricaoLog(dadosLog)
+        Log novoLog = new Log(data: LocalDate.now(), descricao: descricao)
+        log.debug("novoLog: ${novoLog.descricao} ${novoLog.data}")
+
+        try {
+            log.debug("Save")
+            novoLog.save(flush: true)
+        } catch (Exception e) {
+            log.error("Error | ${e}")
+            retorno.success = false
         }
+
+        return retorno
     }
 
-    private static Log criarLog(HttpServletRequest request, JSONObject response, LocalDate data) {
-        String operation = getOperation(request)
-        String situation = getSituation(response)
-        String resource = getResource(request)
-        String resourceId = request.getParameter("id") ?: response?.data?.id ?: ""
+    private static String montarDescricaoLog(Map dadosLog) {
+        String operation = dadosLog.operation ?: ''
+        String situation = dadosLog.situation ?: ''
+        String resource = dadosLog.resource ?: ''
+        String resourceId = dadosLog.resourceId ?: ''
+        String errors = dadosLog.errors ?: ''
 
-        String descricao = "${situation} na ${operation} do recurso ${resource} do ID ${resourceId}"
-        if (situation == 'Failure') {
-            descricao += ": ${getErrors(response)}"
+        String descricao = "${situation} no(a) ${operation} do ${resource} de ID ${resourceId}"
+
+        if (situation == 'Failure' && errors) {
+            descricao += ": ${errors}"
         }
 
-        return new Log(data: data, descricao: descricao)
-    }
-
-    private static String getOperation(HttpServletRequest request) {
-        switch (request.method) {
-            case 'POST':
-                return 'Creat'
-            case 'PUT':
-                return 'Update'
-            default:
-                return 'Delete'
-        }
-    }
-
-    private static String getSituation(JSONObject response) {
-        if (response?.message || response?.errors) {
-            return 'Failure'
-        }
-        return 'Success'
-    }
-
-    private static String getResource(HttpServletRequest request) {
-        String resource = request.servletPath
-        resource = resource.substring(resource.indexOf("/") + 1)
-        resource = resource.substring(0, resource.indexOf("/"))
-
-        return resource()
-    }
-
-    private static String getErrors(JSONObject response) {
-        if (!response.errors) {
-            return response.message
-        }
-        def errors = response.errors.collect { error ->
-            "${error.field}: ${error.message}"
-        }
-        return errors()
+        return descricao
     }
 }
